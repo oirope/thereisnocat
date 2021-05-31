@@ -12,6 +12,7 @@
   "author": "Oirope",
   "license": "MIT",
   "devDependencies": {
+    "@types/ansi-escape-sequences": "^4.0.0",
     "@types/node": "^15.6.1",
     "prettier": "^2.3.0",
     "typescript": "^4.3.2"
