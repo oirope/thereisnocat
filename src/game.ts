@@ -1,32 +1,21 @@
 import { emitKeypressEvents } from 'readline';
 import onChange from 'on-change';
-import { Cat, createCat } from './cat';
-import { Gun, createGun } from './gun';
-
-enum Direction {
-	North,
-	East,
-	South,
-	West,
-}
+import { Map, createMap } from './map';
+import { Direction } from './utils';
 
 type Game = {
-	size: number;
 	facing: Direction;
-	cat: Cat;
-	gun: Gun;
+	map: Map;
 };
 
-export function createGame(size: number): Game {
+export function createGame(): Game {
 	return {
-		size: size,
 		facing: Direction.North,
-		cat: createCat(size),
-		gun: createGun(size),
+		map: createMap(7),
 	};
 }
 
-export function playGame(game: Game) {
+export function startGame(game: Game) {
 	emitKeypressEvents(process.stdin);
 	process.stdin.setRawMode(true);
 
@@ -52,4 +41,5 @@ export function playGame(game: Game) {
 	drawGame(game);
 }
 
-function drawGame(game: Game) {}
+function drawGame(game: Game) {
+}

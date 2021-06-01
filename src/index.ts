@@ -1,8 +1,8 @@
-import { createGame, playGame } from './game';
+import { createGame, startGame } from './game';
 
 function main() {
-	const game = createGame(5);
-	playGame(game);
+	const game = createGame();
+	startGame(game);
 }
 
 main();
