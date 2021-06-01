@@ -1,9 +1,7 @@
 import { sample } from 'lodash';
-import { Direction, ObjectType, GameObject, Position } from './utils';
+import { Direction, opposite, Position, ObjectType, GameObject } from './utils';
 
-export type Map = {
-	map: GameObject[][];
-};
+export type Maze = GameObject[][];
 
 type Cell = Position & {
 	type: ObjectType;
@@ -15,7 +13,7 @@ type Neighbor = Cell & {
 	direction: Direction;
 };
 
-export function createMap(size: number): Map {
+export function createMap(size: number): Maze {
 	let maze: Array<Array<Cell>> = new Array(size).fill(new Array(size));
 	maze = maze.map((_, y): Cell[] =>
 		maze.map((_, x) => {
@@ -43,24 +41,22 @@ export function createMap(size: number): Map {
 			let neighbor: Neighbor = sample(neighbors)!;
 			current.connections.push(neighbor.direction);
 			maze[neighbor.y][neighbor.x].connections.push(
-				(neighbor.direction + 2) % 3,
+				opposite(neighbor.direction),
 			);
 			maze[neighbor.y][neighbor.x].visited = true;
 			stack.push(neighbor);
 		}
 	}
 
-	return {
-		map: maze.map((row, y) =>
-			row.map((cell, x): GameObject => {
-				return {
-					type: cell.type,
-					position: { x, y },
-					connections: cell.connections,
-				};
-			}),
-		),
-	};
+	return maze.map((row, y) =>
+		row.map((cell, x): GameObject => {
+			return {
+				type: cell.type,
+				position: { x, y },
+				connections: [...new Set(cell.connections)],
+			};
+		}),
+	);
 }
 
 function getNeighbors(size: number, maze: Cell[][], cell: Cell): Neighbor[] {
