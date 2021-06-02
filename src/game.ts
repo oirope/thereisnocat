@@ -1,5 +1,6 @@
 import { emitKeypressEvents } from 'readline';
 import onChange from 'on-change';
+import { style } from 'ansi-escape-sequences';
 import { Maze, createMap } from './map';
 import {
 	Direction,
@@ -62,16 +63,10 @@ export function startGame(game: Game) {
 				case 'd':
 					game.facing = (game.facing + 1) % 4;
 					break;
-				case 'r':
-					game.map = createMap(game.size);
-					game.facing = Direction.South;
-					game.position = {
-						x: Math.floor(game.size / 2),
-						y: 0,
-					};
+				case 'e':
 					break;
 				case 'c':
-					if (key.ctrl) process.exit();
+					if (key.ctrl) quit();
 					break;
 			}
 		}
@@ -93,6 +88,8 @@ function drawGame(game: Game) {
 	const width = 28;
 	const height = 22;
 	let head = 0;
+
+	process.stdout.write(style.red);
 
 	for (let i = 0; i < depth; i++) {
 		const d = depth_array[i];
@@ -129,6 +126,23 @@ function drawGame(game: Game) {
 	for (let i = head; i <= width - head; i++) {
 		writeAt('_', i, head - 1);
 		writeAt('_', i, height - head);
+	}
+
+	let gun = `
+	\\\\__ 
+	 ,\\ #\\)
+	 \\   ##\\_
+	  \\    ##\\_
+	   \\     ##\\
+	   /  _    /
+	   \\( )    |
+	`.split('\n');
+
+	process.stdout.write(style.gray);
+
+	for (let line = 0; line < gun.length; line++) {
+		process.stdout.cursorTo(18, 15 + line);
+		process.stdout.write(gun[line]);
 	}
 
 	process.stdout.cursorTo(0, height);
@@ -184,4 +198,10 @@ function mazeObject(maze: Maze, position: Position): GameObject {
 function writeAt(text: string, x: number, y: number) {
 	process.stdout.cursorTo(x, y);
 	process.stdout.write(text);
+}
+
+function quit() {
+	process.stdout.write(style.reset);
+	console.clear();
+	process.exit();
 }
