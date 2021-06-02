@@ -1,10 +1,9 @@
 import { sample } from 'lodash';
-import { Direction, opposite, Position, ObjectType, GameObject } from './utils';
+import { Direction, opposite, Position, GameObject } from './utils';
 
 export type Maze = GameObject[][];
 
 type Cell = Position & {
-	type: ObjectType;
 	visited: boolean;
 	connections: Direction[];
 };
@@ -18,7 +17,6 @@ export function createMap(size: number): Maze {
 	maze = maze.map((_, y): Cell[] =>
 		maze.map((_, x) => {
 			return {
-				type: ObjectType.Wall,
 				visited: false,
 				connections: new Array<Direction>(),
 				x,
@@ -51,7 +49,6 @@ export function createMap(size: number): Maze {
 	return maze.map((row, y) =>
 		row.map((cell, x): GameObject => {
 			return {
-				type: cell.type,
 				position: { x, y },
 				connections: [...new Set(cell.connections)],
 			};

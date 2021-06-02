@@ -51,14 +51,7 @@ export function moveInDirection(
 	return pos;
 }
 
-export enum ObjectType {
-	Wall,
-	Cat,
-	Gun,
-}
-
 export type GameObject = {
-	type: ObjectType;
 	position: Position;
 	connections: Direction[];
 };

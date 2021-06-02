@@ -46,6 +46,19 @@ export function startGame(game: Game) {
 				case 'a':
 					if (game.facing-- === 0) game.facing = 3;
 					break;
+				case 's':
+					let back = moveInDirection(game.position, opposite(game.facing));
+					if (
+						validateMove(
+							game.map,
+							game.position,
+							back,
+							opposite(game.facing),
+							game.size,
+						)
+					)
+						game.position = back;
+					break;
 				case 'd':
 					game.facing = (game.facing + 1) % 4;
 					break;
@@ -73,7 +86,6 @@ export function startGame(game: Game) {
 function drawGame(game: Game) {
 	console.clear();
 
-	const s = process.stdout;
 	let ray = castRay(game.map, game.position, game.facing, game.size);
 	let depth = ray.length;
 
@@ -85,37 +97,41 @@ function drawGame(game: Game) {
 	for (let i = 0; i < depth; i++) {
 		const d = depth_array[i];
 		const right = ray[i].connections.includes((game.facing + 1) % 4);
-		const left = ray[i].connections.includes((game.facing + 1) % 4);
+		const left = ray[i].connections.includes(
+			game.facing - 1 === -1 ? 3 : game.facing - 1,
+		);
 
-		for (let j = head; j < head + d; j++) {
-			if (right) {
-				for (let k = head; k <= height - head; k++)
-					writeAt('[', width - head, k);
-			}
-
-			if (!right) {
-				writeAt('\\', width - j, height - j);
-				writeAt('/', width - j, j);
-			}
-
-			if (left) {
+		for (let j = head; j < Math.min(head + d, Math.floor(height / 2)); j++) {
+			if (left && i !== 0) {
 				for (let k = head; k <= height - head; k++) writeAt(']', head, k);
-			}
-
-			if (!left) {
+			} else if (!left) {
 				writeAt('\\', j, j);
 				writeAt('/', j, height - j);
+			} else {
+				writeAt('_', j, head + d - 1);
+				writeAt('_', j, height - head - d);
+			}
+
+			if (right && i !== 0) {
+				for (let k = head; k <= height - head; k++)
+					writeAt('[', width - head, k);
+			} else if (!right) {
+				writeAt('\\', width - j, height - j);
+				writeAt('/', width - j, j);
+			} else {
+				writeAt('_', width - j, head + d - 1);
+				writeAt('_', width - j, height - head - d);
 			}
 		}
 		head += d;
 	}
 
-	for (let i = head; i <= width - head * (i === 0 ? 0 : 1); i++) {
+	for (let i = head; i <= width - head; i++) {
 		writeAt('_', i, head - 1);
 		writeAt('_', i, height - head);
 	}
 
-	s.cursorTo(0, height);
+	process.stdout.cursorTo(0, height);
 }
 
 function castRay(
